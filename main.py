@@ -6,7 +6,7 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
 FILE = 'pessoas.csv'
-REMETENTE = 'remetente@email.com'
+REMETENTE = 'remetente.emailc.com'
 SENHA = 'senha'
 
 
@@ -36,22 +36,21 @@ anjos = sortear_anjos(pessoas)
 
 def criar_mensagens(pessoas, anjos):
     mensagens = {}
-    formulario_url = "www.formulario.com"
-
+    formulario_url = "https://docs.google.com/forms/d/e/1FAIpQLSeA0I3Iq-hZmQdWIyx2sSL99W3CDX-nRBepuzFpcnnrlReUSQ/viewform?usp=sf_link"
 
     mensagem_base = """
-        Olá {nome},
+    <p>Olá {nome},</p>
 
-        Sou o **guardião do anjo** dessa gestão e você, meu pequeno garfanhoto, foi o sorteado para ser o **anjo de {anjo}**. Cuide para que essa pessoa se sinta **muuuuuito bem** essa gestão.
+    <p>Sou o <strong>guardião do anjo</strong> dessa gestão e você, meu pequeno garfanhoto, foi o sorteado para ser <strong>anjo de {anjo}</strong>. Cuide para que essa pessoa se sinta <strong>muuuuuito bem</strong> essa gestão.</p>
 
-        E atenção, **guarde essa informação apenas para você**! Tudo bem?
+    <p>E atenção, <strong>guarde essa informação apenas para você</strong>! Tudo bem?</p>
 
-        Neste formulário ({url}), você pode indicar os **mimos favoritos de seu protegido**. Além disso, garanta que você também coloque suas preferências.
+    <p>Neste formulário ({url}), você pode encontrar os <strong>mimos favoritos de seu protegido</strong>. Além disso, garanta que você também coloque suas preferências.</p>
 
-        Qualquer coisa, pode contar comigo!
+    <p>Qualquer coisa, pode contar comigo!</p>
 
-        **Boa Gestão!**
-        """
+    <p><strong>Boa Gestão!</strong></p>
+    """
 
     for pessoa in pessoas:
         nome = pessoa['nome']
@@ -62,7 +61,6 @@ def criar_mensagens(pessoas, anjos):
 
     return mensagens
 
-mensagens = criar_mensagens(pessoas, anjos)
 
 def enviar_emails(mensagens):
     smtp_host = 'smtp.gmail.com'
@@ -78,11 +76,18 @@ def enviar_emails(mensagens):
         msg['To'] = destinatario
         msg['Subject'] = "Sorteio de Anjos"
 
-        msg.attach(MIMEText(mensagem, 'plain'))
-
-        server.send_message(msg)
-
+        msg.attach(MIMEText(mensagem, 'html'))
+        
+        try:
+            server.send_message(msg)
+            print(f'E-mail enviado para {destinatario}')
+        except Exception as e:
+            print(f'Erro ao enviar e-mail para {destinatario}, mensagem: {mensagem}')
+            print(e)
+            
     server.quit()
 
-enviar_emails(mensagens)
 
+mensagens = criar_mensagens(pessoas, anjos)
+
+enviar_emails(mensagens)
